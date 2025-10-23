@@ -26,12 +26,50 @@ ArrayListDictionary<Key, Val>::~ArrayListDictionary() {
 
 template <typename Key, typename Val>
 Val ArrayListDictionary<Key, Val>::binSearchIter(const Key& target, int left, int right) const {
-    // TODO
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        Key midKey = list->getElement(mid).k;
+
+        numComps++; // For the == comparison
+        if (target == midKey) {
+            return list->getElement(mid).v; // Found it
+        }
+
+        numComps++; // For the < comparison
+        if (target < midKey) {
+            right = mid - 1; // Search the left half
+        } else {
+            left = mid + 1;  // Search the right half
+        }
+    }
+    
+    // The loop finished (left > right), so the key was not found.
+    throw -1;
 }
 
 template <typename Key, typename Val>
 Val ArrayListDictionary<Key, Val>::binSearchRec(const Key& target, int left, int right) const {
-    // TODO
+    // Base Case 1: The search space is empty.
+    if (left > right) {
+        throw -1; // Key not found
+    }
+
+    int mid = left + (right - left) / 2;
+    Key midKey = list->getElement(mid).k;
+
+    numComps++; // For the == comparison
+    // Base Case 2: Found it.
+    if (target == midKey) {
+        return list->getElement(mid).v;
+    }
+
+    numComps++; // For the < comparison
+    // Recursive Step: Search the correct half.
+    if (target < midKey) {
+        return binSearchRec(target, left, mid - 1); // Search left
+    } else {
+        return binSearchRec(target, mid + 1, right); // Search right
+    }
 }
 
 template <typename Key, typename Val>
@@ -88,15 +126,39 @@ void ArrayListDictionary<Key, Val>::remove(const Key& k) {
 
 template <typename Key, typename Val>
 Val ArrayListDictionary<Key, Val>::seqSearchIter(const Key& target) const {
-    // TODO
+    for (int i = 0; i < list->getLength(); i++) {
+        // Increment for each key comparison
+        numComps++;
+        if (list->getElement(i).k == target) {
+            return list->getElement(i).v; // Found it
+        }
+    }
+    
+    // Looped through the whole list and didn't find it
+    throw -1; 
 }
 
 template <typename Key, typename Val>
 Val ArrayListDictionary<Key, Val>::seqSearchRec(const Key& target, int i) const {
-    // TODO
+    // Base Case 1: We've gone past the end of the list.
+    if (i >= list->getLength()) {
+        throw -1; // Key not found
+    }
+
+    // Increment for this element's key comparison
+    numComps++;
+    
+    // Base Case 2: We found the key.
+    if (list->getElement(i).k == target) {
+        return list->getElement(i).v;
+    }
+
+    // Recursive Step: Check the next element in the list.
+    return seqSearchRec(target, i + 1);
 }
 
 template <typename Key, typename Val>
 int ArrayListDictionary<Key, Val>::size() const {
     return list->getLength();
 }
+
